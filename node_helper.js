@@ -20,7 +20,7 @@ module.exports = NodeHelper.create({
             if (req.body.message){
                 var message = req.body.message;
                 console.log("Received kalliope message: " + message);
-                this.sendSocketNotification("NEW_MESSAGE", message);
+                this.sendSocketNotification("NEW_KALLIOPE_MESSAGE", message);
                 res.send({"status": "success", "payload": message});
             }else{
                 res.send({"status": "failed", "error": "No message given."});

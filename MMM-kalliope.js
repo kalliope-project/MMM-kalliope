@@ -14,7 +14,8 @@ Module.register('MMM-kalliope',{
     // Default module config.
 	defaults: {
         max: 5,
-        keep_seconds: 5
+        keep_seconds: 5,
+        title: "Kalliope"
     },
 
     start: function() {
@@ -28,9 +29,12 @@ Module.register('MMM-kalliope',{
 			this.updateDom();
         }, 1000);
 
-        setInterval(() => {
-			this.cleanOldMesssage();
-        }, 1000);
+        // only clean old messages if keep_seconds is set
+        if (this.config.keep_seconds > 0){
+            setInterval(() => {
+                this.cleanOldMesssage();
+            }, 1000);
+        }
     },
 
     cleanOldMesssage: function() {
@@ -38,12 +42,11 @@ Module.register('MMM-kalliope',{
 
         for(var i = 0; i < this.messages.length; i++){
             var dif = currentDate.getTime() - this.messages[i].timestamp.getTime();
-
-            var Seconds_from_T1_to_T2 = dif / 1000;
-            var Seconds_Between_Dates = Math.abs(Seconds_from_T1_to_T2);
+            var secondsFromCurrentDateToMessageDate = dif / 1000;
+            var secondsBetweenDates = Math.abs(secondsFromCurrentDateToMessageDate);
 
             // delete the message if to old
-            if (Seconds_Between_Dates > this.config.keep_seconds){
+            if (secondsBetweenDates > this.config.keep_seconds){
                 this.messages.splice(i, 1);
             }
         }
@@ -58,6 +61,11 @@ Module.register('MMM-kalliope',{
             return wrapper
         }
 
+        var title = document.createElement("div");
+        title.className = "light small dimmed";
+        title.innerHTML = this.config.title;
+        wrapper.appendChild(title);
+
         var table = document.createElement("table");
 
         for(var i = 0; i < this.messages.length; i++){
@@ -69,20 +77,34 @@ Module.register('MMM-kalliope',{
 			messageCell.innerHTML =  this.messages[i].text
 			row.appendChild(messageCell);
         }
-        return table;
+        wrapper.appendChild(table);
+
+        return wrapper;
     },
 
     socketNotificationReceived: function(notification, payload) {
         console.log(this.name + " received a socket notification: " + notification + " - Payload: " + payload);
+        if (notification == "NEW_KALLIOPE_MESSAGE"){
+            // create new message object
+            var newMessage = new Message(payload);
+            this.messages.push(newMessage);
 
-        // create new message object
-        var newMessage = new Message(payload);
-        this.messages.push(newMessage);
-
-        // clean old messages if list is too long
-        while(this.messages.length > this.config.max){
-            this.messages.shift();
+            // clean old messages if list is too long
+            while(this.messages.length > this.config.max){
+                this.messages.shift();
+            }
         }
 
+
+    },
+
+    notificationReceived: function(notification, payload, sender) {
+        if (sender) {
+            console.log(this.name + " received a module notification: " + notification
+            + " from sender: " + sender.name);
+            console.log(payload);
+        } else {
+            Log.log(this.name + " received a system notification: " + notification);
+        }
     }
 });
