@@ -1,7 +1,8 @@
 /* global Module */
 
-// test command
-// curl -H "Content-Type: application/json" -X POST -d '{"message":"test"}' http://localhost:8080/kalliope
+// test commands
+// curl -H "Content-Type: application/json" -X POST -d '{"notification":"KALLIOPE", "payload": "my message"}' http://localhost:8080/kalliope
+// curl -H "Content-Type: application/json" -X POST -d '{"notification":"SHOW_ALERT", "payload": {"title": "mytitle", "message": "this is a test", "timer": 5000}}' http://localhost:8080/kalliope
 
 const NodeHelper = require("node_helper");
 const bodyParser = require('body-parser');
@@ -17,13 +18,15 @@ module.exports = NodeHelper.create({
         this.expressApp.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
         this.expressApp.post('/kalliope', (req, res) => {
-            if (req.body.message){
-                var message = req.body.message;
-                console.log("Received kalliope message: " + message);
-                this.sendSocketNotification("NEW_KALLIOPE_MESSAGE", message);
-                res.send({"status": "success", "payload": message});
+            if (req.body.notification){
+                if (req.body.payload){
+                    this.sendSocketNotification(req.body.notification, req.body.payload);
+                    res.send({"status": "success"});
+                }else{
+                    res.send({"status": "failed", "error": "No payload given."});
+                }
             }else{
-                res.send({"status": "failed", "error": "No message given."});
+                res.send({"status": "failed", "error": "No notification given."});
             }
         });
     },

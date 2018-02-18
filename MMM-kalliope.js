@@ -84,7 +84,7 @@ Module.register('MMM-kalliope',{
 
     socketNotificationReceived: function(notification, payload) {
         console.log(this.name + " received a socket notification: " + notification + " - Payload: " + payload);
-        if (notification == "NEW_KALLIOPE_MESSAGE"){
+        if (notification == "KALLIOPE"){
             // create new message object
             var newMessage = new Message(payload);
             this.messages.push(newMessage);
@@ -93,6 +93,10 @@ Module.register('MMM-kalliope',{
             while(this.messages.length > this.config.max){
                 this.messages.shift();
             }
+
+        }else{
+            // forward the notification to all modules
+            this.sendNotification(notification, payload);
         }
 
 
