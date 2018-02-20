@@ -6,6 +6,8 @@ This module allow you to:
 - show what Kalliope say on the screen
 - control your Magic Mirror by sending notification to other active modules
 
+> **Note:** On Kalliope, [a neuron is available](https://github.com/kalliope-project/kalliope_neuron_magic_mirror) to talk with this module directly.
+
 ![Demo](images/kalliope_neuron_magic_mirror_demo.gif)
 
 [Video demo with sound here](https://youtu.be/QHwctPbJ2ZY)
