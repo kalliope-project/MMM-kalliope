@@ -59,3 +59,25 @@ Here the notification is sent to the alert module.
 ```
 curl -H "Content-Type: application/json" -X POST -d '{"notification":"SHOW_ALERT", "payload": {"title": "mytitle", "message": "this is a test", "timer": 5000}}' http://localhost:8080/kalliope
 ```
+
+## How to control my MM module from this module
+
+All notifications that are not concerned by this module (when the notification name is not "KALLIOPE") will be send to other installed module on your Magic Mirror.
+
+To add a notification receptor to your module, you just need to implement the `notificationReceived` method like bellow.
+
+```js
+notificationReceived: function(notification, payload){
+		....
+
+		if (notification === "NOTIFICAION_NAME" && payload=="bla"){
+			// Do some magic here with your module
+		}
+
+		if (notification === "NOTIFICAION_NAME" && payload=="blablabla"){
+			// Do some magic here with your module
+		}
+
+		....
+},
+```
