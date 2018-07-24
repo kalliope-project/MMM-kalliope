@@ -83,7 +83,7 @@ Module.register('MMM-kalliope',{
     },
 
     socketNotificationReceived: function(notification, payload) {
-        console.log(this.name + " received a socket notification: " + notification + " - Payload: " + payload);
+        // console.log(this.name + " received a socket notification: " + notification + " - Payload: " + payload);
         if (notification == "KALLIOPE"){
             // create new message object
             var newMessage = new Message(payload);
